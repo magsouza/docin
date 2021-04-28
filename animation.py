@@ -54,7 +54,6 @@ if __name__ == '__main__':
 	        speed[1] = -speed[1]
 	    if y == step:
 	    	speed[1] = -speed[1]
-	    	pygame.time.delay(120)
 	    	step = random.randint(0, height/2)
 
 	    screen.fill(black)
