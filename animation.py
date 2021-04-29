@@ -3,24 +3,6 @@ import pygame
 import pygame.gfxdraw
 import random
 
-'''
-Alguns testes com o pygame.
-Se rodar ele cria uma bolinha que oscila como um espectograma aleatório.
-
-A FAZER:
-Parametrizar isso.
-Receber uma lista de frequencias, criar um limite superior acima da frequencia máxima,
-criar um limite inferior abaixo da frequencia mínima, normalizar as frequencias com
-base nesses novos limites e multiplicar pela metade da altura da janela (valor encontrado
-em teste), dessa forma cria uma "margem" para que a bolinha não vá até os limites da
-janela.
-
-usar os valores dessa nova lista com o 'step' onde a bolinha vai parar.
-
-Criar uma forma de deixar "rastro" (talvez com listas de imagens que mudam o alpha e
-quando chega em alpha = 0 é removida da lista).
-'''
-
 class Figure(): #vai ser a bolinha em si + o rastro
 
 	def __init__(self):
@@ -54,7 +36,7 @@ def circle_settings(N, W):
 
 	color = (255,0,0)
 	max_w = (W/2) - 10
-	min_w = (W/2) + 10
+	min_w = 1
 	rate = (max_w - min_w) / (N + 1)
 
 	min_value = min_w
@@ -68,8 +50,30 @@ def circle_settings(N, W):
 	circle['color'] = color
 	circle['radius'] = int(radius)
 	circle['centers'] = centers
+	print(centers)
+	for i in range(len(centers)):
+		if i < len(centers)-1:
+			print(centers[i+1] - centers[i])
+
 
 	return circle
+
+class Screen():
+
+	def __init__(self, width, height):
+		self.width = width
+		self.height = height
+
+class Ball():
+
+	def __init__(self, color, center, radius):
+		self.color = color
+		self.center_x, self.center_y = center
+		self.radius = radius
+
+	def draw(self, screen, position_y):
+		self.center_y = position_y
+		return pygame.draw.circle(screen, self.color, (self.center_x, self.center_y), self.radius)
 
 if __name__ == '__main__':
 	pygame.init()
@@ -83,34 +87,42 @@ if __name__ == '__main__':
 
 	screen = pygame.display.set_mode((width, height))
 	clock = pygame.time.Clock()
+	#screen.fill(black)
 
 	#MOCK
-	'''
-	N = random.randint(1, 400)
+	
+	#N = random.randint(1, 10)
+	N= 5
+	print(N)
 	mock = create_mock(N)
-	circle = circle_settings(N, width/2)'''
-
+	circle = circle_settings(N, width/2)
+	
 	x = width / 4
 	y = height / 2
 	step = random.randint(0, height/2)
+
+	balls = []
+	for i in range(N):
+		balls.append(Ball(circle['color'], (circle['centers'][i], y), circle['radius']))
+	print('criou as bolas.')
+
 	while 1:
 	    for event in pygame.event.get():
 	        if event.type == pygame.QUIT: sys.exit()
 
-	    if x < 0 or x > width/2:
-	        speed[0] = -speed[0]
-	    if y < 0 or y > height/2:
+	    if y <= 0 or y >= height/2:
 	        speed[1] = -speed[1]
 	    if y == step:
 	    	speed[1] = -speed[1]
 	    	step = random.randint(0, height/2)
 
 	    screen.fill(black)
-	    ball = pygame.draw.circle(screen, (255,0,0), (x, y), 20)
-	    ball2 = pygame.draw.circle(screen, (0,0,255), (x, y), 20)
-	    x += speed[0]
+	    for i in range(N):
+	    	balls[i].draw(screen, y)
 	    y += speed[1]
-	    screen.blit(screen, ball)
-	    screen.blit(screen, ball2)
+
+	    for i in range(N):
+	    	screen.blit(screen, balls[i].draw(screen, y))
+
 	    pygame.display.flip()
 	    clock.tick(200)
