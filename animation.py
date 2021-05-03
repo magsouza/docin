@@ -3,66 +3,71 @@ import pygame
 import pygame.gfxdraw
 import random
 
-class Figure(): #vai ser a bolinha em si + o rastro
-
-	def __init__(self):
-		pass
-
-class Animation(): # o que vai fazer com que a bolinha se movimente com base nas frequencias
-
-	def __init__(self):
-		pass
-
-def create_mock(N):
-	mock = {}
-	steps = 100
-	decibels = []
-
-	for i in range(N):
-		decibels_level = []
-		for j in range(steps):
-			temp = random.randint(-80, 0)
-			decibels_level.append(temp)
-		decibels.append(decibels_level)
-
-	mock['N'] = N
-	mock['steps'] = steps
-	mock['decibels'] = decibels
-
-	return mock
-
-def circle_settings(N, W):
+def get_circle_settings(N, W, H, C):
 	circle = {}
 
-	color = (255,0,0)
-	max_w = (W/2) - 10
-	min_w = 1
+	color_rate = len(C)/N
+	colors = []
+	step = 0
+
+	for i in range(N):
+		colors.append(C[int(step)])
+		step += color_rate
+	
+	color = (127,0,127)
+	max_w = (W) - 10
+	min_w = 10
 	rate = (max_w - min_w) / (N + 1)
+
+	radius = min(20, max(1, 0.4 * rate))
 
 	min_value = min_w
 	centers = []
 	for i in range(N):
 		min_value += rate
-		centers.append(min_value)
+		center = (min_value, H - radius - 100)
+		centers.append(center)
 
-	radius = min(20, 0.4 * rate)
-
-	circle['color'] = color
+	circle['colors'] = colors
 	circle['radius'] = int(radius)
 	circle['centers'] = centers
-	print(centers)
-	for i in range(len(centers)):
-		if i < len(centers)-1:
-			print(centers[i+1] - centers[i])
-
 
 	return circle
 
-class Screen():
+def get_new_centers(centers, H):
+	new_centers = []
+	for center in centers:
+		x, y = center
+		temp = tuple([x, random.uniform(max(0, y-200), min(H, y+200))])
+		new_centers.append(temp)
 
-	def __init__(self, width, height):
-		self.width = width
-		self.height = height
+	return new_centers
+
+def color_matrix():
+	step = 1
+	colors = []
+	color = (255,0,0)
+
+	colors.append(color)
+	for i in range(3):
+		for j in range(255):
+			if i == 0:
+				new_color = tuple([color[0]-1, color[1]+1, color[2]])
+			elif i == 1:
+				new_color = tuple([color[0], color[1]-1, color[2]+1])
+			elif i == 2:
+				new_color = tuple([color[0]+1, color[1], color[2]-1])
+			colors.append(new_color)
+			color = new_color
+
+	return colors
+
+def get_color():
+	R = random.randint(0, 255)
+	G = random.randint(0, 255)
+	B = random.randint(0, 255)
+
+	return (R, G, B)
 
 class Ball():
 
@@ -75,54 +80,50 @@ class Ball():
 		self.center_y = position_y
 		return pygame.draw.circle(screen, self.color, (self.center_x, self.center_y), self.radius)
 
+
 if __name__ == '__main__':
+	N = 10
+
 	pygame.init()
 
-	info_object = pygame.display.Info()
-	width = int(info_object.current_w/2)
-	height = int(info_object.current_h/2)
+	info = pygame.display.Info()
+	win = pygame.display.set_mode((int(info.current_w), int(info.current_h)))
+	pygame.display.set_caption("Nome da Música")
 
-	speed = [0, 1]
-	black = 0, 0, 0
-
-	screen = pygame.display.set_mode((width, height))
-	clock = pygame.time.Clock()
-	#screen.fill(black)
-
-	#MOCK
-	
-	#N = random.randint(1, 10)
-	N= 5
-	print(N)
-	mock = create_mock(N)
-	circle = circle_settings(N, width/2)
-	
-	x = width / 4
-	y = height / 2
-	step = random.randint(0, height/2)
-
+	#Detalhes da bola
+	colors = color_matrix()
+	circle_settings = get_circle_settings(N, int(info.current_w), int(info.current_h), colors)
+	y = info.current_h - circle_settings['radius'] - 100 #depois remover o 100
+	speed = 2
+	centers = []
 	balls = []
-	for i in range(N):
-		balls.append(Ball(circle['color'], (circle['centers'][i], y), circle['radius']))
-	print('criou as bolas.')
 
-	while 1:
-	    for event in pygame.event.get():
-	        if event.type == pygame.QUIT: sys.exit()
+	run = True
+	first_loop = True
+	while run:
+		pygame.time.delay(100)
 
-	    if y <= 0 or y >= height/2:
-	        speed[1] = -speed[1]
-	    if y == step:
-	    	speed[1] = -speed[1]
-	    	step = random.randint(0, height/2)
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				run = False
 
-	    screen.fill(black)
-	    for i in range(N):
-	    	balls[i].draw(screen, y)
-	    y += speed[1]
+		if first_loop:
+			for i in range(N):
+				ball = Ball(circle_settings['colors'][i],
+					circle_settings['centers'][i],
+					circle_settings['radius'])
+				balls.append(ball)
+				balls[i].draw(win, y)
+			first_loop = False
+			centers = circle_settings['centers']
+			
+		else:
+			centers = get_new_centers(centers, y)
 
-	    for i in range(N):
-	    	screen.blit(screen, balls[i].draw(screen, y))
+		#win.fill(get_color())
+		win.fill((0,0,0))
+		for i in range(N):
+			balls[i].draw(win, centers[i][1])
+		pygame.display.update()
 
-	    pygame.display.flip()
-	    clock.tick(200)
+	pygame.quit()
