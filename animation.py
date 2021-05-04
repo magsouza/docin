@@ -1,4 +1,3 @@
-import sys
 import pygame
 import pygame.gfxdraw
 import random
@@ -38,7 +37,7 @@ def get_new_centers(centers, H):
 	new_centers = []
 	for center in centers:
 		x, y = center
-		temp = tuple([x, random.uniform(max(0, y-200), min(H, y+200))])
+		temp = tuple([x, random.uniform(max(0, y-75), min(H, y+75))])
 		new_centers.append(temp)
 
 	return new_centers
@@ -69,6 +68,16 @@ def get_color():
 
 	return (R, G, B)
 
+def normalize_decibel(decibels, H):
+	n_decibels = []
+	for dec in decibels:
+		dec = dec * (-1)
+		value = (dec/80) * H
+		n_decibels.append(value)
+
+	return n_decibels
+
+
 class Ball():
 
 	def __init__(self, color, center, radius):
@@ -82,7 +91,7 @@ class Ball():
 
 
 if __name__ == '__main__':
-	N = 10
+	N = 50
 
 	pygame.init()
 
