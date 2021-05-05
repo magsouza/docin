@@ -53,7 +53,7 @@ class AudioFeatures:
         return self.spec_lines[spectro][freq][int(target_time*self.time_index_ratio)]
 
 def main():
-    filename = "musics/Alexander Hamilton.wav"
+    filename = "musics/Kiss Me More.wav"
     extractor = AudioFeatures()
     extractor.load(filename)
     
