@@ -2,6 +2,7 @@ import librosa.display
 import numpy as np
 import pygame
 import math
+import random
 
 class AudioFeatures:
     
@@ -52,6 +53,13 @@ class AudioFeatures:
         #return self.spectrogram[int(freq*self.frequencies_index_ratio)][int(target_time*self.time_index_ratio)]
         return self.spec_lines[spectro][freq][int(target_time*self.time_index_ratio)]
 
+    def get_random_freq(self, spectro):
+        s = self.spec_lines[spectro]
+        l = len(s)
+        r = random.randint(0, l-1)
+        #print(r)
+        return s[r]
+
 def main():
     filename = "musics/Alexander Hamilton.wav"
     extractor = AudioFeatures()
@@ -66,21 +74,23 @@ def main():
     extractor.ger_spec_lines()
     for r in extractor.spec_lines:
         print(f"Nº de faixas do tipo {r.upper()}: {len(extractor.spec_lines[r])}")
+        aux = extractor.get_random_freq(r)
+        print(aux)
 
 
 
-    pygame.init()
+    '''pygame.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play(0)
     i = 0
     aux = 0
     
     while True:
-        j = extractor.get_decibel(pygame.mixer.music.get_pos() / 1000.0, 'midrange', 0)
+        j = extractor.get_decibel(pygame.mixer.music.get_pos() / 1000.0, 'midrange', 1)
         if j != aux:
             print(j)
         aux = j
         i += 1
-
+'''
 if __name__ == '__main__':
     main()
