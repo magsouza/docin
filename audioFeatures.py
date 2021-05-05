@@ -34,9 +34,10 @@ class AudioFeatures:
             aux = [(i >= limits[l]['start'] and i < limits[l]['stop']) for i in self.frequencies]
             self.spec_lines[l] = self.spectrogram[aux]
 
-    def get_decibel(self, target_time, freq):
-    
-        return self.spectrogram[int(freq*self.frequencies_index_ratio)][int(target_time*self.time_index_ratio)]
+    def get_decibel(self, target_time, spectro, freq):
+        #freq
+        #return self.spectrogram[int(freq*self.frequencies_index_ratio)][int(target_time*self.time_index_ratio)]
+        return self.spec_lines[spectro][freq][int(target_time*self.time_index_ratio)]
 
 def main():
     filename = "musics/Alexander Hamilton.wav"
@@ -55,14 +56,18 @@ def main():
 
 
 
-    '''pygame.init()
+    pygame.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play(0)
     i = 0
+    aux = 0
+    
     while True:
-        j = extractor.get_decibel(pygame.mixer.music.get_pos() / 1000.0, 0)
-        print(j)
-        i += 1'''
+        j = extractor.get_decibel(pygame.mixer.music.get_pos() / 1000.0, 'midrange', 0)
+        if j != aux:
+            print(j)
+        aux = j
+        i += 1
 
 if __name__ == '__main__':
     main()
