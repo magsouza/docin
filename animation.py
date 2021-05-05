@@ -1,6 +1,7 @@
 import pygame
 import pygame.gfxdraw
 import random
+import audioFeatures as audio
 
 def get_circle_settings(N, W, H, C):
 	"""
@@ -230,13 +231,20 @@ if __name__ == '__main__':
 	Musical e Processamento de Som (Computational Music and Sound 
 	Processing), taught by professor Giordano Cabral.
 	"""
-	N = 6000
+	N = 7
+	filename = "musics/Kiss Me More.wav"
+	extractor = audio.AudioFeatures()
+    extractor.load(filename)
+
+    extractor.get_spec_lines()
+    spec_lines = extractor.spec_lines
 
 	pygame.init()
+	pygame.mixer.music.load(filename)
 
 	info = pygame.display.Info()
 	win = pygame.display.set_mode((int(info.current_w), int(info.current_h)))
-	pygame.display.set_caption("Nome da Música")
+	pygame.display.set_caption(filename[:-4])
 
 	#Detalhes da bola
 	colors = color_list()
@@ -266,6 +274,7 @@ if __name__ == '__main__':
 				balls[i].draw(win, y)
 			first_loop = False
 			centers = circle_settings['centers']
+			pygame.mixer.music.play(0)
 			
 		else:
 			centers = get_new_centers(centers, y)
