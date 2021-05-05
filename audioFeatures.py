@@ -53,12 +53,26 @@ class AudioFeatures:
         #return self.spectrogram[int(freq*self.frequencies_index_ratio)][int(target_time*self.time_index_ratio)]
         return self.spec_lines[spectro][freq][int(target_time*self.time_index_ratio)]
 
+    def get_decibels(self, target_time, spectro, freqs):
+        decibels = []
+        for f in freqs:
+            decibels.append(self.get_decibel(target_time, spectro, f))
+
+        return decibels
+
     def get_random_freq(self, spectro):
         s = self.spec_lines[spectro]
         l = len(s)
         r = random.randint(0, l-1)
-        #print(r)
-        return s[r]
+        return r
+
+    def get_freqs(self, n, spectro):
+        freqs = []
+        for i in range(n):
+            freq = self.get_random_freq(spectro)
+            freqs.append(freq)
+        return freqs
+
 
 def main():
     filename = "musics/Kiss Me More.wav"

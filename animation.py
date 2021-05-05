@@ -129,7 +129,7 @@ def get_color():
 
 	return (R, G, B)
 
-def normalize_decibel(decibels, H):
+def normalize_decibels(decibels, H):
 	"""
 	Responsible for normalizing the decibels in the screen height scale
 
@@ -231,14 +231,19 @@ if __name__ == '__main__':
 	Musical e Processamento de Som (Computational Music and Sound 
 	Processing), taught by professor Giordano Cabral.
 	"""
-	N = 7
+	N = 70
 	filename = "musics/Kiss Me More.wav"
 	extractor = audio.AudioFeatures()
-    extractor.load(filename)
+	extractor.load(filename)
 
-    extractor.get_spec_lines()
-    spec_lines = extractor.spec_lines
+	extractor.ger_spec_lines()
+	#spec_lines = extractor.spec_lines
+	spec_ids = {}
 
+	rate = int(N/len(extractor.spec_lines))
+	for spec in extractor.spec_lines:
+		spec_ids[spec] = extractor.get_freqs(rate, spec)
+	
 	pygame.init()
 	pygame.mixer.music.load(filename)
 
@@ -277,7 +282,14 @@ if __name__ == '__main__':
 			pygame.mixer.music.play(0)
 			
 		else:
-			centers = get_new_centers(centers, y)
+			decibels = []
+			for spec in spec_ids:
+				temp = extractor.get_decibels(pygame.mixer.music.get_pos() / 1000.0, spec, spec_ids[spec])
+				decibels += temp
+
+			decibels = normalize_decibels(decibels, y)
+
+			centers = [(centers[i][0], decibels[i]) for i in range(len(decibels))]    #get_new_centers(centers, y)
 
 		#win.fill(get_color())
 		win.fill((0,0,0))
