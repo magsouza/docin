@@ -7,6 +7,19 @@ class AudioFeatures:
     
     def __init__(self):
 
+        '''
+        Construtor de um objeto AudioFeatures, não toma parâmetros de entrada.
+
+        Inicializa os atributos frequencies_index_ratio e time_index_ratio ambos
+        do tipo inteiro com o valor 0, pois ainda não carregou nenhum arquivo
+        de audio. 
+        
+        Atributo spectogram -> tipo numpy array
+        Atributo spec_lines -> dicionário de numpy arrays, chaves são os espectros
+                               de audio, conteúdo são numpy arrays de cada faixa desses
+                               espectros
+        '''
+
         self.frequencies_index_ratio = 0 
         self.time_index_ratio = 0
         self.spectrogram = None
