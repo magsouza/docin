@@ -231,8 +231,8 @@ if __name__ == '__main__':
 	Musical e Processamento de Som (Computational Music and Sound 
 	Processing), taught by professor Giordano Cabral.
 	"""
-	N = 140
-	filename = "musics/911.wav"
+	N = int(input())
+	filename = str(input())
 	extractor = audio.AudioFeatures()
 	extractor.load(filename)
 
