@@ -231,19 +231,18 @@ if __name__ == '__main__':
 	Musical e Processamento de Som (Computational Music and Sound 
 	Processing), taught by professor Giordano Cabral.
 	"""
-	N = 70
-	filename = "musics/Kiss Me More.wav"
+	N = 140
+	filename = "musics/911.wav"
 	extractor = audio.AudioFeatures()
 	extractor.load(filename)
 
 	extractor.ger_spec_lines()
-	#spec_lines = extractor.spec_lines
 	spec_ids = {}
 
 	rate = int(N/len(extractor.spec_lines))
 	for spec in extractor.spec_lines:
 		spec_ids[spec] = extractor.get_freqs(rate, spec)
-	
+
 	pygame.init()
 	pygame.mixer.music.load(filename)
 
@@ -264,8 +263,6 @@ if __name__ == '__main__':
 	run = True
 	first_loop = True
 	while run:
-		pygame.time.delay(80)
-
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				run = False
